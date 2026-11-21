@@ -230,7 +230,7 @@ if (existsSync(join(ROOT, ".git"))) {
     for (const line of git("remote", "-v").split("\n").filter(Boolean)) {
       if (/:\/\/[^/@\s]+@/.test(line)) add(".git/config", 0, "git-remote-credentials");
     }
-    const APPROVED_REMOTE = { name: "origin", url: "https://github.com/vestainsight-dotcom/vesta-scanner-web.git" };
+    const APPROVED_REMOTE = { name: "origin", url: "https://github.com/vestainsight-dotcom/vesta-scanner-cmc.git" };
     for (const r of git("remote").split("\n").filter(Boolean)) {
       if (r !== APPROVED_REMOTE.name) {
         add(".git", 0, "git-remote-configured"); // any other remote

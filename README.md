@@ -126,7 +126,7 @@ This project is an educational and research demonstration. Scanner events are si
 
 Ideas from developers, traders and researchers are welcome:
 
-1. **Ideas and research questions** → [open an Issue](https://github.com/vestainsight-dotcom/vesta-scanner-web/issues/new/choose) with the Feature request or Research proposal template. GitHub Discussions are not enabled yet; the planned categories are in [docs/COMMUNITY.md](docs/COMMUNITY.md)
+1. **Ideas and research questions** → [open an Issue](https://github.com/vestainsight-dotcom/vesta-scanner-cmc/issues/new/choose) with the Feature request or Research proposal template. GitHub Discussions are not enabled yet; the planned categories are in [docs/COMMUNITY.md](docs/COMMUNITY.md)
 2. **Bugs and agreed features** → Issues, using the templates
 3. **Code** → read [CONTRIBUTING.md](CONTRIBUTING.md); starter tasks are in [docs/GOOD_FIRST_ISSUES.md](docs/GOOD_FIRST_ISSUES.md)
 
@@ -194,7 +194,7 @@ npm run dev          # 開發伺服器 → http://localhost:3210/demo
 
 ### 參與協作
 
-1. **想法與研究問題** → 以 Feature request 或 Research proposal 範本[開 Issue](https://github.com/vestainsight-dotcom/vesta-scanner-web/issues/new/choose)。GitHub Discussions 尚未啟用，預計的分類見 [docs/COMMUNITY.md](docs/COMMUNITY.md)
+1. **想法與研究問題** → 以 Feature request 或 Research proposal 範本[開 Issue](https://github.com/vestainsight-dotcom/vesta-scanner-cmc/issues/new/choose)。GitHub Discussions 尚未啟用，預計的分類見 [docs/COMMUNITY.md](docs/COMMUNITY.md)
 2. **錯誤回報與已確認的功能** → 使用範本開 Issue
 3. **程式碼** → 請先讀 [CONTRIBUTING.md](CONTRIBUTING.md)；入門任務見 [docs/GOOD_FIRST_ISSUES.md](docs/GOOD_FIRST_ISSUES.md)
 

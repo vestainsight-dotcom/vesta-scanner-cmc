@@ -203,7 +203,7 @@ test("git guard: the local rules file must be ignored and never tracked", () => 
 
 // ---- git remotes, --maintainer: only the approved origin (local temp repos, no network) ----
 
-const APPROVED_ORIGIN = j("https://github.com/", "vestainsight-dotcom", "/vesta-scanner-web.git");
+const APPROVED_ORIGIN = j("https://github.com/", "vestainsight-dotcom", "/vesta-scanner-cmc.git");
 const gitIn = (dir: string, ...a: string[]) => execFileSync("git", ["-C", dir, ...a], { stdio: "ignore" });
 function remoteRepo(setup: (dir: string) => void) {
   const dir = tempProject({ ".gitignore": "/security.local.json\n" });
@@ -223,8 +223,8 @@ test("the approved origin passes", () => {
 
 test("origin with any other fetch or push URL is rejected", () => {
   const variants: [string, (d: string) => void][] = [
-    ["other owner", (d) => gitIn(d, "remote", "add", "origin", j("https://github.com/", "someone-else", "/vesta-scanner-web.git"))],
-    ["ssh form", (d) => gitIn(d, "remote", "add", "origin", j("git", "@github.com:", "vestainsight-dotcom/vesta-scanner-web.git"))],
+    ["other owner", (d) => gitIn(d, "remote", "add", "origin", j("https://github.com/", "someone-else", "/vesta-scanner-cmc.git"))],
+    ["ssh form", (d) => gitIn(d, "remote", "add", "origin", j("git", "@github.com:", "vestainsight-dotcom/vesta-scanner-cmc.git"))],
     ["no .git suffix", (d) => gitIn(d, "remote", "add", "origin", APPROVED_ORIGIN.slice(0, -4))],
     ["credentials", (d) => gitIn(d, "remote", "add", "origin", APPROVED_ORIGIN.replace("https://", j("https://u", ":p", "@")))],
     [
@@ -251,7 +251,7 @@ test("origin with any other fetch or push URL is rejected", () => {
 
 test("default (contributor) mode never fails on remotes; maintainer mode does", () => {
   const fork = remoteRepo((d) => {
-    gitIn(d, "remote", "add", "origin", j("https://github.com/", "someone-else", "/vesta-scanner-web.git"));
+    gitIn(d, "remote", "add", "origin", j("https://github.com/", "someone-else", "/vesta-scanner-cmc.git"));
     gitIn(d, "remote", "add", "upstream", APPROVED_ORIGIN);
   });
   assert.equal(fork.contributor.status, 0, fork.contributor.stderr);

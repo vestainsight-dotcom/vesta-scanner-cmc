@@ -52,7 +52,7 @@ Exchange, charting and asset names that appear in the UI or in mock data (for ex
 
 ### 5. Questions
 
-Raise brand questions by [opening an Issue](https://github.com/vestainsight-dotcom/vesta-scanner-web/issues/new/choose) (Feature request template, title starting with "Brand:"). Do not include personal or confidential information in it.
+Raise brand questions by [opening an Issue](https://github.com/vestainsight-dotcom/vesta-scanner-cmc/issues/new/choose) (Feature request template, title starting with "Brand:"). Do not include personal or confidential information in it.
 
 ---
 
@@ -95,4 +95,4 @@ Raise brand questions by [opening an Issue](https://github.com/vestainsight-dotc
 
 ### 5. 聯絡
 
-品牌相關問題請[開 Issue](https://github.com/vestainsight-dotcom/vesta-scanner-web/issues/new/choose)（使用 Feature request 範本，標題以「Brand:」開頭），請勿在其中附上個人或機密資訊。
+品牌相關問題請[開 Issue](https://github.com/vestainsight-dotcom/vesta-scanner-cmc/issues/new/choose)（使用 Feature request 範本，標題以「Brand:」開頭），請勿在其中附上個人或機密資訊。

@@ -21,13 +21,13 @@ By participating you agree to follow the [Code of Conduct](CODE_OF_CONDUCT.md).
 | Data visualization | New views of the existing snapshot fields |
 | Mock data and tests | New scenarios, edge cases, more test coverage |
 | Documentation | Corrections, clearer explanations, translations |
-| Research ideas | Questions and methods, proposed with the [Research proposal issue template](https://github.com/vestainsight-dotcom/vesta-scanner-web/issues/new/choose) |
+| Research ideas | Questions and methods, proposed with the [Research proposal issue template](https://github.com/vestainsight-dotcom/vesta-scanner-cmc/issues/new/choose) |
 
 Starter tasks: [docs/GOOD_FIRST_ISSUES.md](docs/GOOD_FIRST_ISSUES.md).
 
 ### Workflow
 
-1. **Propose first for anything major.** [Open an Issue](https://github.com/vestainsight-dotcom/vesta-scanner-web/issues/new/choose) with the Feature request or Research proposal template for new features, new views or research ideas, so the scope is agreed before work starts. Small fixes (typos, obvious bugs) can go straight to a Bug report or a PR. (GitHub Discussions are not enabled yet; see [docs/COMMUNITY.md](docs/COMMUNITY.md).)
+1. **Propose first for anything major.** [Open an Issue](https://github.com/vestainsight-dotcom/vesta-scanner-cmc/issues/new/choose) with the Feature request or Research proposal template for new features, new views or research ideas, so the scope is agreed before work starts. Small fixes (typos, obvious bugs) can go straight to a Bug report or a PR. (GitHub Discussions are not enabled yet; see [docs/COMMUNITY.md](docs/COMMUNITY.md).)
 2. **Agree on scope** with a maintainer in the Issue.
 3. **Start work** once the Issue records the agreed scope.
 4. **Fork and branch.** Work in a separate branch, for example `feat/keyboard-nav` or `fix/empty-state-text`. Dependency install scripts are not needed: the project builds and passes its tests with them skipped (npm 11 skips unapproved install scripts by default).
@@ -81,11 +81,11 @@ Do not report vulnerabilities in public Issues or Discussions. See [SECURITY.md]
 
 ### 可以貢獻的方向
 
-UI／UX、無障礙（鍵盤操作、螢幕閱讀器標籤、對比）、多語系、PWA（安裝與離線體驗）、資料視覺化、模擬資料與測試、文件，以及研究想法（請以 [Research proposal 範本開 Issue](https://github.com/vestainsight-dotcom/vesta-scanner-web/issues/new/choose)）。入門任務見 [docs/GOOD_FIRST_ISSUES.md](docs/GOOD_FIRST_ISSUES.md)。
+UI／UX、無障礙（鍵盤操作、螢幕閱讀器標籤、對比）、多語系、PWA（安裝與離線體驗）、資料視覺化、模擬資料與測試、文件，以及研究想法（請以 [Research proposal 範本開 Issue](https://github.com/vestainsight-dotcom/vesta-scanner-cmc/issues/new/choose)）。入門任務見 [docs/GOOD_FIRST_ISSUES.md](docs/GOOD_FIRST_ISSUES.md)。
 
 ### 流程
 
-1. **重大想法先提案**：新功能、新視圖或研究想法請以 Feature request 或 Research proposal 範本[開 Issue](https://github.com/vestainsight-dotcom/vesta-scanner-web/issues/new/choose)，先確認範圍；小修正（錯字、明顯 bug）可直接開 Bug report 或 PR。（GitHub Discussions 尚未啟用，見 [docs/COMMUNITY.md](docs/COMMUNITY.md)。）
+1. **重大想法先提案**：新功能、新視圖或研究想法請以 Feature request 或 Research proposal 範本[開 Issue](https://github.com/vestainsight-dotcom/vesta-scanner-cmc/issues/new/choose)，先確認範圍；小修正（錯字、明顯 bug）可直接開 Bug report 或 PR。（GitHub Discussions 尚未啟用，見 [docs/COMMUNITY.md](docs/COMMUNITY.md)。）
 2. **在 Issue 中與維護者確認範圍。**
 3. **範圍確認後再開始開發。**
 4. **Fork 並在獨立分支開發**，例如 `feat/keyboard-nav`。建置與測試不需要執行相依套件的安裝腳本（npm 11 預設會略過未核准的安裝腳本，在此情況下仍可建置並通過測試）。

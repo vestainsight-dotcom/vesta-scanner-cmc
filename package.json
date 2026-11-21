@@ -1,5 +1,5 @@
 {
-  "name": "vesta-scanner-web",
+  "name": "vesta-scanner-cmc",
   "version": "0.1.0",
   "private": true,
   "description": "VESTA Scanner public frontend — demo mode: simulated scanner events with optional real CoinMarketCap market context.",

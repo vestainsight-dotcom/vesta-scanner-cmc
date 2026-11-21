@@ -10,7 +10,7 @@
 
 Please report vulnerabilities **privately**. Do not open a public Issue, Discussion or pull request that describes an unfixed vulnerability.
 
-**Private reporting channel:** GitHub private vulnerability reporting: open the repository's **Security** tab and choose **Report a vulnerability** (https://github.com/vestainsight-dotcom/vesta-scanner-web/security/advisories/new). Only the maintainers can see these reports.
+**Private reporting channel:** GitHub private vulnerability reporting: open the repository's **Security** tab and choose **Report a vulnerability** (https://github.com/vestainsight-dotcom/vesta-scanner-cmc/security/advisories/new). Only the maintainers can see these reports.
 
 _PENDING — the maintainer enables private vulnerability reporting when the repository is made public. If the **Report a vulnerability** button is not shown yet, do not post any details publicly; instead open an Issue that only asks for a private contact, without describing the problem._
 
@@ -65,7 +65,7 @@ Every pull request is reviewed by a maintainer and must pass `npm run check`, wh
 
 請以**私下方式**回報漏洞，不要在公開的 Issue、Discussion 或 PR 中描述尚未修復的漏洞。
 
-**私下回報管道：**GitHub 的 private vulnerability reporting：開啟儲存庫的 **Security** 分頁，選擇 **Report a vulnerability**（https://github.com/vestainsight-dotcom/vesta-scanner-web/security/advisories/new）。回報內容只有維護者看得到。
+**私下回報管道：**GitHub 的 private vulnerability reporting：開啟儲存庫的 **Security** 分頁，選擇 **Report a vulnerability**（https://github.com/vestainsight-dotcom/vesta-scanner-cmc/security/advisories/new）。回報內容只有維護者看得到。
 
 _待啟用（PENDING）：維護者會在儲存庫公開時啟用 private vulnerability reporting。若尚未看到「Report a vulnerability」按鈕，請勿公開任何細節，只需開一個 Issue 請求私下聯絡方式，不要描述問題本身。_
 

@@ -56,7 +56,7 @@ Tick **"Show BTC relation prototype (draft)"** on `/demo`. A labelled banner app
 
 ### Contributing to this topic
 
-Use the [Research proposal issue template](https://github.com/vestainsight-dotcom/vesta-scanner-web/issues/new/choose) (a Quant Research Discussion category is planned, see [COMMUNITY.md](COMMUNITY.md)). Useful contributions: definitions and thresholds with reasoning, validation methods (out-of-sample checks, stability across windows), and UI ideas that communicate uncertainty and change over time.
+Use the [Research proposal issue template](https://github.com/vestainsight-dotcom/vesta-scanner-cmc/issues/new/choose) (a Quant Research Discussion category is planned, see [COMMUNITY.md](COMMUNITY.md)). Useful contributions: definitions and thresholds with reasoning, validation methods (out-of-sample checks, stability across windows), and UI ideas that communicate uncertainty and change over time.
 
 ---
 
