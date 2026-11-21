@@ -96,6 +96,9 @@ const zh = {
   },
   table: {
     swipe: "左右滑動查看 →",
+    scrollHint: "左右捲動查看更多欄位 →（觸控板、Shift＋滑鼠滾輪，或 ◀ ▶）",
+    scrollLeft: "表格向左捲動",
+    scrollRight: "表格向右捲動",
     region: (sort: string) => `訊號排行（依${sort}）`,
     symbol: "# 幣種",
     event: "事件",
@@ -344,6 +347,9 @@ const en: Messages = {
   },
   table: {
     swipe: "Swipe to see more →",
+    scrollHint: "Scroll sideways for more columns → (trackpad, Shift + mouse wheel, or ◀ ▶)",
+    scrollLeft: "Scroll table left",
+    scrollRight: "Scroll table right",
     region: (sort: string) => `Signal ranking (by ${sort})`,
     symbol: "# Symbol",
     event: "Event",

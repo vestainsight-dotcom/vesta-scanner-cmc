@@ -5,7 +5,7 @@
 // all words from lib/i18n, every time labelled as simulated, a scenario picker,
 // a schema-rejection state, and an optional BTC-relation prototype column.
 
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useId, useMemo, useRef, useState, type ReactNode, type RefObject } from "react";
 import { SchemaValidationError, type Latest } from "@/lib/data/adapter";
 import { createMockAdapter, validateSnapshot } from "@/lib/data/mock-adapter";
 import { SIM_EPOCH_MS, simClock, type Clock } from "@/lib/data/sim-clock";
@@ -453,6 +453,67 @@ function Def({ term, sep, children }: { term: string; sep: string; children: Rea
 
 const TH = "px-3 py-3 font-mono text-[10px] font-normal tracking-widest whitespace-nowrap text-foreground/55 uppercase";
 const STICKY = "sticky left-0 z-10 bg-background";
+
+/** Horizontal navigation for the board: can it scroll left/right, and scroll by one visible width. */
+function useHorizontalNav(ref: RefObject<HTMLDivElement | null>) {
+  const [state, setState] = useState({ canLeft: false, canRight: true });
+  const update = useCallback(() => {
+    const el = ref.current;
+    if (!el) return;
+    const max = el.scrollWidth - el.clientWidth;
+    const next = { canLeft: el.scrollLeft > 1, canRight: el.scrollLeft < max - 1 };
+    setState((s) => (s.canLeft === next.canLeft && s.canRight === next.canRight ? s : next));
+  }, [ref]);
+  useEffect(() => {
+    update();
+    const el = ref.current;
+    if (!el || typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    const table = el.querySelector("table");
+    if (table) ro.observe(table);
+    return () => ro.disconnect();
+  }, [ref, update]);
+  const scrollPage = useCallback((dir: "left" | "right") => {
+    const el = ref.current;
+    if (!el) return;
+    // about one visible width, minus the pinned Symbol column so no column is skipped
+    const sticky = el.querySelector("thead th")?.getBoundingClientRect().width ?? 0;
+    const step = Math.max(80, el.clientWidth - sticky - 24);
+    const reduce = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    el.scrollBy({ left: dir === "left" ? -step : step, behavior: reduce ? "auto" : "smooth" });
+  }, [ref]);
+  return { update, scrollPage, canLeft: state.canLeft, canRight: state.canRight };
+}
+
+function NavButton({
+  dir,
+  label,
+  controls,
+  enabled,
+  onClick,
+}: {
+  dir: "left" | "right";
+  label: string;
+  controls: string;
+  enabled: boolean;
+  onClick: (dir: "left" | "right") => void;
+}) {
+  return (
+    <button
+      type="button"
+      data-testid={`board-nav-${dir}`}
+      aria-label={label}
+      title={label}
+      aria-controls={controls}
+      disabled={!enabled}
+      onClick={() => onClick(dir)}
+      className="flex h-7 w-8 items-center justify-center rounded-md border border-foreground/20 text-xs text-foreground/70 transition-colors hover:border-accent-tech/60 hover:text-accent-tech disabled:cursor-not-allowed disabled:opacity-35 disabled:hover:border-foreground/20 disabled:hover:text-foreground/70"
+    >
+      <span aria-hidden="true">{dir === "left" ? "◀" : "▶"}</span>
+    </button>
+  );
+}
 const signColor = (p: number | null) => (p === null || p === 0 ? "text-foreground/60" : p > 0 ? UP : DOWN);
 
 export function Board({
@@ -473,22 +534,38 @@ export function Board({
   cmc?: Map<string, CmcAsset> | null;
 }) {
   const sorted = (k: SortKey) => (sort === k ? "text-accent-tech" : "");
+  const boardId = useId();
+  const boardRef = useRef<HTMLDivElement>(null);
+  const { update, scrollPage, canLeft, canRight } = useHorizontalNav(boardRef);
   return (
     <div className="flex min-w-0 flex-col gap-1.5">
-      <span aria-hidden="true" className="font-mono text-[10px] tracking-widest text-foreground/40 uppercase sm:hidden">
-        {m.table.swipe}
-      </span>
+      <div className="flex items-center justify-between gap-3">
+        <span aria-hidden="true" data-testid="board-scroll-hint" className="font-mono text-[10px] tracking-widest text-foreground/45 uppercase">
+          <span className="sm:hidden">{m.table.swipe}</span>
+          <span className="hidden sm:inline">{m.table.scrollHint}</span>
+        </span>
+        <div className="flex shrink-0 items-center gap-1" data-testid="board-nav">
+          <NavButton dir="left" label={m.table.scrollLeft} controls={boardId} enabled={canLeft} onClick={scrollPage} />
+          <NavButton dir="right" label={m.table.scrollRight} controls={boardId} enabled={canRight} onClick={scrollPage} />
+        </div>
+      </div>
+      {/* Phones: full-height table, touch scrolls sideways (no nested vertical scroll).
+          sm and up: box capped at 75vh and scrolling both ways, so its horizontal
+          scrollbar stays on screen; header row and Symbol column stay pinned. */}
       <div
+        ref={boardRef}
+        id={boardId}
         role="region"
         aria-label={m.table.region(m.sort[sort])}
         tabIndex={0}
         data-testid="board"
-        className={`overflow-x-auto overscroll-x-contain rounded-xl border border-foreground/15 bg-foreground/[0.02] ${
+        onScroll={update}
+        className={`board-scroll overflow-x-auto overscroll-x-contain rounded-xl border border-foreground/15 bg-foreground/[0.02] sm:max-h-[75vh] sm:overflow-y-auto ${
           dim ? "opacity-60" : ""
         }`}
       >
         <table className="w-full min-w-max border-collapse text-left text-sm tabular-nums">
-          <thead>
+          <thead className="sm:sticky sm:top-0 sm:z-20 [&_tr]:bg-background">
             <tr>
               <th scope="col" className={`${TH} ${STICKY}`}>
                 {m.table.symbol}

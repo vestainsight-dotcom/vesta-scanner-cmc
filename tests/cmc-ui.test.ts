@@ -376,3 +376,44 @@ test("C5 final: neutral zh trend words everywhere; hero subtitle", () => {
   assert.equal(en.hero.subtitle, "Monitor unusual cryptocurrency market activity with contextual market data.");
   assert.match(text(renderToStaticMarkup(createElement(DemoApp))), /結合市場背景資料，監測加密貨幣市場的異常活動。/);
 });
+
+// ---------- C6-N: table navigation (horizontal scrolling usability) ----------
+test("board navigation: hint, ◀ ▶ buttons tied to the board, left disabled at start (default locale)", () => {
+  const html = board(assetsBySymbol(loaded(ctx())));
+  const t = MESSAGES["zh-Hant"].table; // the server render uses the default locale
+  assert.ok(html.includes(t.swipe) && html.includes(t.scrollHint), "phone and desktop hints");
+  const id = /data-testid="board"[^>]*\bid="([^"]+)"|\bid="([^"]+)"[^>]*data-testid="board"/.exec(html);
+  const boardId = id?.[1] ?? id?.[2];
+  assert.ok(boardId, "board has an id");
+  for (const [dir, label] of [["left", t.scrollLeft], ["right", t.scrollRight]] as const) {
+    const btn = new RegExp(`<button[^>]*data-testid="board-nav-${dir}"[^>]*>`).exec(html)?.[0] ?? "";
+    assert.match(btn, /type="button"/, dir);
+    assert.ok(btn.includes(`aria-label="${label}"`), `${dir} label`);
+    assert.ok(btn.includes(`aria-controls="${boardId}"`), `${dir} controls the board`);
+    assert.equal(/\bdisabled=""/.test(btn), dir === "left", `${dir} disabled state at the leftmost position`);
+  }
+});
+
+test("board layout: capped height and two-way scroll from sm up, natural height on phones, sticky header + Symbol column", () => {
+  const html = board(assetsBySymbol(loaded(ctx())));
+  const boardTag = /<div[^>]*data-testid="board"[^>]*>/.exec(html)?.[0] ?? "";
+  for (const c of ["overflow-x-auto", "sm:max-h-[75vh]", "sm:overflow-y-auto", "board-scroll"]) assert.ok(boardTag.includes(c), c);
+  assert.doesNotMatch(boardTag, /(^|\s|")max-h-|(^|\s|")overflow-y-auto/, "no vertical cap or nested vertical scroll on phones");
+  assert.match(html, /<thead class="[^"]*sm:sticky sm:top-0 sm:z-20/);
+  // the top-left corner: the Symbol header cell is pinned left and opaque
+  assert.match(html, /<th scope="col" class="[^"]*sticky left-0 z-10 bg-background/);
+  // all 15 columns are still there
+  const thead = /<thead[\s\S]*?<\/thead>/.exec(html)?.[0] ?? "";
+  assert.equal((thead.match(/<th /g) ?? []).length, 15);
+});
+
+test("navigation words exist in both locales; the scrollbar style is defined", async () => {
+  for (const l of LOCALES) {
+    const t = MESSAGES[l].table;
+    for (const k of ["swipe", "scrollHint", "scrollLeft", "scrollRight"] as const) assert.ok(t[k].length > 0, `${l}.${k}`);
+  }
+  const { readFileSync } = await import("node:fs");
+  const css = readFileSync(new URL("../app/globals.css", import.meta.url), "utf-8");
+  assert.match(css, /\.board-scroll::-webkit-scrollbar \{/);
+  assert.match(css, /scrollbar-width: thin/);
+});

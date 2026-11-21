@@ -21,3 +21,26 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
 }
+
+/* Scanner board: a visible horizontal scrollbar where the browser allows styling it
+   (macOS overlay scrollbars would otherwise stay hidden until scrolling). The ◀ ▶
+   buttons and the hint above the table do not depend on this. */
+.board-scroll::-webkit-scrollbar {
+  height: 10px;
+  width: 10px;
+}
+.board-scroll::-webkit-scrollbar-thumb {
+  background-color: color-mix(in srgb, currentColor 28%, transparent);
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+.board-scroll::-webkit-scrollbar-track {
+  background-color: color-mix(in srgb, currentColor 6%, transparent);
+}
+@supports not selector(::-webkit-scrollbar) {
+  .board-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, currentColor 35%, transparent) transparent;
+  }
+}
