@@ -109,6 +109,7 @@ Built for the *Build with CMC: API Hackathon, Round 2*. Everything below is new;
 | Data time | `as_of` is when the market values were fetched from CMC (the oldest of quotes, global metrics and Fear & Greed). The page shows it as "CMC snapshot as of … · cached, not real-time" |
 | When CMC fails | Last good values are shown for a limited time and marked **STALE**; missing parts are marked **PARTIAL**; with nothing usable the section shows **UNAVAILABLE** and the scanner demo keeps working |
 | Symbol matching | Binance contract → CMC ID, conservative: a ticker shared by several CMC assets is never guessed. The 13 such tickers in the demo universe are pinned to verified IDs; anything else unmatched shows "Not matched" |
+| Coin links | A matched row's symbol opens its CoinMarketCap page (`https://coinmarketcap.com/currencies/<slug>/`), using CMC's own page name for the verified CMC ID, and only when CMC's map and quote agree on it; TradingView becomes the secondary link. Ambiguous, unmatched or unavailable rows keep the TradingView link. No extra CMC requests |
 | Contract | `vesta.cmc.context.v1` (`lib/schema/cmc-context-v1.ts`), strict and validated on the server and again in the browser |
 | Not included, on purpose | No futures-vs-spot volume ratio (they measure different markets), no buy / sell or long / short recommendations, no scores or predictions |
 
@@ -185,6 +186,8 @@ npm run dev          # 開發伺服器 → http://localhost:3210/demo
 頁面元件只透過 Data Adapter 取得資料，每份快照必須先通過公開 schema（`vesta.scan.public.v2`）驗證才會顯示。CoinMarketCap 市場背景只由伺服器路由向 CMC 取得（瀏覽器只呼叫同源的 `/api/cmc/context`），經伺服器快取並以 `vesta.cmc.context.v1` 驗證。CMC 24H 現貨成交額是 CMC 匯總的現貨（CEX + DEX）成交額，與合約的 24H 成交額（模擬）衡量不同市場，不可直接比較。**本專案不包含正式後端、資料庫、資料管線、偵測演算法或任何交易系統。** 詳見 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)。
 
 市場資料來源（只要顯示 CMC 資料，就會出現在市場背景區塊與表格圖例旁）：[Data provided by CoinMarketCap.com](https://coinmarketcap.com)。
+
+已對應的幣種名稱會連到 CoinMarketCap 幣種頁面（使用 CMC 為該驗證 ID 提供的頁面名稱，且只有在 CMC 的 map 與 quote 一致時才顯示），TradingView 改為次要連結；無法唯一對應或無法取得 CMC 資料時，維持原本的 TradingView 連結。不會增加任何 CMC 請求。
 
 ### 截圖
 

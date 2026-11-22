@@ -10,7 +10,7 @@ import { CmcContextPanel } from "@/components/cmc-context-panel";
 import { DemoApp } from "@/components/demo-app";
 import { ScannerBoard, SourceLegend } from "@/components/scanner-board";
 import { CMC_CONTEXT_PATH, loadCmcContext, type CmcLoad } from "@/lib/data/cmc-context-client";
-import { assetsBySymbol, cmcBadges, fearGreedClass, formatPp, formatShare, formatUsdCompact, usableContext } from "@/lib/data/cmc-view";
+import { assetsBySymbol, cmcBadges, cmcCoinUrl, fearGreedClass, formatPp, formatShare, formatUsdCompact, usableContext } from "@/lib/data/cmc-view";
 import { DEFAULT_LOCALE, LOCALES, MESSAGES } from "@/lib/i18n/messages";
 import { MOCK_SYMBOLS } from "@/lib/mock/scenarios";
 import { ATTRIBUTION, CMC_CONTEXT_SCHEMA, REASONS, TIERS, cmcContextSchema, tierOf, type CmcAsset, type CmcContext } from "@/lib/schema/cmc-context-v1";
@@ -431,4 +431,45 @@ test("first visit without a saved choice renders in English; both locales stay s
   // the switcher still offers both languages, current one pressed
   for (const l of LOCALES) assert.match(html, new RegExp(`data-testid="lang-${l}"`), l);
   assert.match(html, /<button[^>]*lang="en"[^>]*aria-pressed="true"|<button[^>]*aria-pressed="true"[^>]*lang="en"/);
+});
+
+// ---------- C6-L3: CMC coin page as the primary symbol link ----------
+const linksIn = (html: string, symbol: string) => {
+  const row = html.split("<tr").find((r) => r.includes(`>${symbol}<`)) ?? "";
+  return [...row.matchAll(/<a [^>]*href="([^"]+)"[^>]*data-link="([^"]+)"/g)].map((m) => [m[2], m[1].replace(/&amp;/g, "&")]);
+};
+
+test("cmcCoinUrl: only OK assets with a valid slug; fixed host; never from the ticker", () => {
+  const a = { ...okAsset("BTCUSDT", 0), slug: "bitcoin" };
+  assert.equal(cmcCoinUrl(a), "https://coinmarketcap.com/currencies/bitcoin/");
+  assert.equal(cmcCoinUrl(okAsset("BTCUSDT", 0)), null); // no verified slug -> no link
+  assert.equal(cmcCoinUrl({ ...a, slug: "bit/coin" } as CmcAsset), null);
+  assert.equal(cmcCoinUrl({ symbol: "BTCUSDT", state: "AMBIGUOUS" }), null);
+  assert.equal(cmcCoinUrl(undefined), null);
+});
+
+test("symbol link: CMC page primary + TradingView secondary when verified; TradingView only otherwise", () => {
+  const assets = MOCK_SYMBOLS.map((s, i) => (i === 0 ? { ...okAsset(s, i), slug: "bitcoin" } : okAsset(s, i)));
+  const html = board(assetsBySymbol(loaded(ctx({ assets }))));
+  const tv = (s: string) => `https://www.tradingview.com/chart/?symbol=${encodeURIComponent(`BINANCE:${s}.P`)}`;
+  const first = MOCK_SYMBOLS[0];
+  assert.deepEqual(linksIn(html, first), [["cmc", "https://coinmarketcap.com/currencies/bitcoin/"], ["tv-secondary", tv(first)]]);
+  assert.match(html, new RegExp(`title="${dm.table.cmcTitle("Synthetic 0")}"`));
+  // OK asset without a verified slug: unchanged TradingView link, no secondary
+  const second = MOCK_SYMBOLS[1];
+  assert.deepEqual(linksIn(html, second), [["tv", tv(second)]]);
+  // no CMC data at all: unchanged TradingView links everywhere
+  const none = board(null);
+  assert.doesNotMatch(none, /coinmarketcap\.com\/currencies|data-link="cmc"|tv-secondary/);
+  assert.deepEqual(linksIn(none, first), [["tv", tv(first)]]);
+  // every link opens safely in a new tab
+  for (const tag of html.match(/<a [^>]*data-link="[^"]+"[^>]*>/g) ?? []) assert.match(tag, /target="_blank"[^>]*rel="noopener noreferrer"|rel="noopener noreferrer"[^>]*target="_blank"/);
+});
+
+test("link labels exist in both locales", () => {
+  for (const l of LOCALES) {
+    const t = MESSAGES[l].table;
+    assert.ok(t.cmcTitle("Bitcoin").includes("Bitcoin") && t.cmcTitle("Bitcoin").includes("CoinMarketCap"), l);
+    assert.equal(t.tvLink, "TradingView");
+  }
 });

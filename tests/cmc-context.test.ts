@@ -164,3 +164,40 @@ test("unexpected text from CMC drops the asset or the field instead of showing i
   const r = buildContext(input({ fearGreed: fearGreedData({ value: 140 }) }));
   assert.equal(r.backdrop?.fear_greed, null);
 });
+
+// ---------- C6-L3: CMC coin page name (slug) ----------
+test("slug: passed through only when map and quote agree for the verified id; never on non-OK assets", () => {
+  const ok = buildContext(input());
+  const bySym = new Map(ok.assets.map((a) => [a.symbol, a]));
+  const aaa = bySym.get("AAAUSDT");
+  const pepe = bySym.get("1000PEPEUSDT");
+  assert.ok(aaa?.state === "OK" && aaa.slug === "synthetic-aaa");
+  assert.ok(pepe?.state === "OK" && pepe.slug === "synthetic-pepe"); // base coin of the 1000x contract
+  for (const s of ["DUPUSDT", "NONEUSDT"]) assert.ok(!("slug" in (bySym.get(s) ?? {})), `${s} has no slug`);
+
+  // the quote disagrees with the map -> no slug (the asset itself stays OK)
+  const disagree = quotes([
+    { id: 900001, symbol: "AAA", rank: 3, price: 10 },
+    { id: 24478, symbol: "PEPE", rank: 120, price: 0.00001 },
+  ]).map((q) => (q.id === 900001 ? { ...q, slug: "another-coin" } : q));
+  const c = buildContext(input({ quotes: disagree }));
+  const a = c.assets.find((x) => x.symbol === "AAAUSDT");
+  assert.ok(a?.state === "OK" && a.slug === undefined);
+  assert.equal(cmcContextSchema.safeParse(c).success, true);
+});
+
+test("slug: the schema accepts CMC page names only", () => {
+  const base = buildContext(input());
+  const withSlug = (slug: unknown) => {
+    const c = structuredClone(base);
+    const a = c.assets.find((x) => x.state === "OK") as Record<string, unknown>;
+    a.slug = slug;
+    return cmcContextSchema.safeParse(c).success;
+  };
+  for (const good of ["bitcoin", "pepe", "terra-luna-2", "1inch"]) assert.equal(withSlug(good), true, good);
+  for (const bad of ["", "Bitcoin", "bit/coin", "../x", "bitcoin?x=1", "-btc", "btc-", "a--b", "https://evil.test", "a".repeat(81), 7]) {
+    assert.equal(withSlug(bad), false, String(bad));
+  }
+  // absent is fine (older or unverified data)
+  assert.equal(withSlug(undefined), true);
+});

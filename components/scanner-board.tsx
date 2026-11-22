@@ -30,6 +30,7 @@ import {
 import { conflictLabel, eventLabel, warningLabels } from "@/lib/scanner/labels";
 import type { CmcAsset } from "@/lib/schema/cmc-context-v1";
 import type { PublicRow, PublicSnapshot, SortKey } from "@/lib/schema/public-v2";
+import { cmcCoinUrl } from "@/lib/data/cmc-view";
 import { CmcHeaderCells, CmcRowCells } from "./cmc-cells";
 import { CmcAttribution, SourceTag } from "./cmc-context-panel";
 
@@ -646,23 +647,46 @@ function Row({
   const warnings = warningLabels(m, r);
   const c = corr?.get(r.symbol);
   const detectedAge = r.detected_at ? Math.round((now - Date.parse(r.detected_at)) / 1000) : 0;
+  // CMC coin page only for a matched asset with a verified page name; otherwise TradingView as before
+  const asset = cmc?.get(r.symbol);
+  const cmcUrl = cmcCoinUrl(asset);
+  const tvUrl = tradingViewUrl(r.symbol);
   return (
     <tr className="border-t border-foreground/10 align-top">
       <td className={`px-3 py-2.5 whitespace-nowrap ${STICKY}`}>
         <span className="mr-2 font-mono text-[11px] text-foreground/40">{rank}</span>
         <a
-          href={tradingViewUrl(r.symbol)}
+          href={cmcUrl ?? tvUrl}
           target="_blank"
           rel="noopener noreferrer"
+          data-link={cmcUrl ? "cmc" : "tv"}
           className="font-medium text-foreground transition-colors hover:text-accent-tech"
-          title={m.table.tvTitle(r.symbol)}
+          title={cmcUrl && asset?.state === "OK" ? m.table.cmcTitle(asset.name) : m.table.tvTitle(r.symbol)}
         >
           {r.symbol}
           <span aria-hidden="true" className="ml-1 text-[11px] text-foreground/40">
             ↗
           </span>
         </a>
-        <div className="text-xs text-foreground/50">{m.table.qv24h(formatUsdt(r.qv_24h.usdt))}</div>
+        <div className="text-xs text-foreground/50">
+          {m.table.qv24h(formatUsdt(r.qv_24h.usdt))}
+          {cmcUrl && (
+            <>
+              {" · "}
+              <a
+                href={tvUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                data-link="tv-secondary"
+                title={m.table.tvTitle(r.symbol)}
+                className="underline decoration-foreground/25 underline-offset-2 transition-colors hover:text-accent-tech"
+              >
+                {m.table.tvLink}
+                <span aria-hidden="true"> ↗</span>
+              </a>
+            </>
+          )}
+        </div>
       </td>
       <td className="px-3 py-2.5 whitespace-nowrap">
         <span className={`font-medium ${dirColor}`}>{eventLabel(m, e.type, e.direction)}</span>

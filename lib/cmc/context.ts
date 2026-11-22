@@ -16,6 +16,7 @@
 import { usdQuote, type CmcQuoteItem } from "@/lib/cmc/raw";
 import type { Mapping } from "@/lib/cmc/symbol-map";
 import {
+  CMC_SLUG_RE,
   ATTRIBUTION,
   CMC_CONTEXT_SCHEMA,
   MAX_ASSETS,
@@ -87,12 +88,15 @@ function asset(m: Mapping, quotes: ReadonlyMap<number, CmcQuoteItem> | null): Cm
   const rankRaw = item.cmc_rank;
   const rank = typeof rankRaw === "number" && Number.isInteger(rankRaw) && rankRaw >= 1 && rankRaw <= 1e7 ? rankRaw : null;
   const price = num(q.price, 0);
+  // the coin page name: only when the map (verified id) and the quote agree on it; never derived from the ticker
+  const slug = m.slug === item.slug && item.slug.length <= 80 && CMC_SLUG_RE.test(item.slug) ? item.slug : null;
   return {
     symbol,
     state: "OK",
     cmc_id: m.cmc_id,
     cmc_symbol: item.symbol,
     name,
+    ...(slug ? { slug } : {}),
     multiplier: m.multiplier,
     rank,
     tier: tierOf(rank),

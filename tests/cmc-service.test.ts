@@ -254,8 +254,13 @@ test("never exposes the key or raw CMC fields", async () => {
   const s = setup();
   const json = JSON.stringify(await s.service.getContext());
   assert.ok(!json.includes(FAKE_KEY));
-  for (const raw of ["credit_count", "error_code", "tags", "cex_volume_24h", "slug", "platform", "num_market_pairs", "quote"]) {
+  for (const raw of ["credit_count", "error_code", "tags", "cex_volume_24h", "platform", "num_market_pairs", "quote"]) {
     assert.ok(!json.includes(`"${raw}"`), raw);
+  }
+  // C6-L3: the coin page name is the one CMC field passed on, validated, on OK assets only
+  const ctx = JSON.parse(json) as CmcContext;
+  for (const a of ctx.assets) {
+    if ("slug" in a) assert.ok(a.state === "OK" && typeof a.slug === "string" && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(a.slug), a.symbol);
   }
 });
 

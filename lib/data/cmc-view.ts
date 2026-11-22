@@ -4,7 +4,7 @@
 // formatting. [CMC Hackathon — C4]
 
 import type { CmcLoad } from "@/lib/data/cmc-context-client";
-import type { CmcAsset, CmcContext } from "@/lib/schema/cmc-context-v1";
+import { CMC_COIN_PAGE_BASE, CMC_SLUG_RE, type CmcAsset, type CmcContext } from "@/lib/schema/cmc-context-v1";
 
 export type CmcBadge = "LOADING" | "LIVE" | "STALE" | "PARTIAL" | "UNAVAILABLE";
 
@@ -58,4 +58,14 @@ export type FearGreedClass = (typeof FEAR_GREED_CLASSES)[number];
 export function fearGreedClass(text: string): FearGreedClass | null {
   const k = text.trim().toUpperCase().replace(/\s+/g, "_");
   return (FEAR_GREED_CLASSES as readonly string[]).includes(k) ? (k as FearGreedClass) : null;
+}
+
+/**
+ * CoinMarketCap coin page for a matched asset, or null. Only OK assets that carry a
+ * validated slug (CMC's map and quote agreed on it for the verified CMC id) get one;
+ * the URL is never built from a ticker.
+ */
+export function cmcCoinUrl(a: CmcAsset | undefined): string | null {
+  if (!a || a.state !== "OK" || !a.slug || a.slug.length > 80 || !CMC_SLUG_RE.test(a.slug)) return null;
+  return `${CMC_COIN_PAGE_BASE}${a.slug}/`;
 }

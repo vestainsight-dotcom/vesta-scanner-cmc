@@ -59,6 +59,10 @@ const pct = bounded.nullable();
 
 const assetBase = { symbol: z.string().regex(SYMBOL_RE) };
 
+/** CMC's own page name for a coin, e.g. "bitcoin" in https://coinmarketcap.com/currencies/bitcoin/. */
+export const CMC_SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+export const CMC_COIN_PAGE_BASE = "https://coinmarketcap.com/currencies/";
+
 export const assetSchema = z.discriminatedUnion("state", [
   z.strictObject({
     ...assetBase,
@@ -66,6 +70,8 @@ export const assetSchema = z.discriminatedUnion("state", [
     cmc_id: z.number().int().min(1).max(1e9),
     cmc_symbol: z.string().regex(/^[\p{L}\p{N}$._-]{1,32}$/u),
     name: z.string().min(1).max(80),
+    // optional: present only when CMC's map and quote agree on it for this verified CMC id
+    slug: z.string().max(80).regex(CMC_SLUG_RE).optional(),
     // asset units per scanner contract unit (1000PEPEUSDT -> 1000)
     multiplier: z.union([z.literal(1), z.literal(1_000), z.literal(1_000_000)]),
     rank: z.number().int().min(1).max(1e7).nullable(),
