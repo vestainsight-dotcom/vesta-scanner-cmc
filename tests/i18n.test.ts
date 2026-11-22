@@ -26,9 +26,9 @@ function strings(v: unknown, path = ""): [string, string][] {
   return [];
 }
 
-test("locales: zh-Hant (default) and en", () => {
-  assert.deepEqual([...LOCALES], ["zh-Hant", "en"]);
-  assert.equal(DEFAULT_LOCALE, "zh-Hant");
+test("locales: zh-Hant and en (default)", () => {
+  assert.deepEqual([...LOCALES], ["zh-Hant", "en"]); // switcher order unchanged
+  assert.equal(DEFAULT_LOCALE, "en");
   assert.ok(isLocale("en") && !isLocale("fr") && !isLocale(null));
 });
 

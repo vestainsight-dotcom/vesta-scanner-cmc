@@ -11,12 +11,14 @@ import { DemoApp } from "@/components/demo-app";
 import { ScannerBoard, SourceLegend } from "@/components/scanner-board";
 import { CMC_CONTEXT_PATH, loadCmcContext, type CmcLoad } from "@/lib/data/cmc-context-client";
 import { assetsBySymbol, cmcBadges, fearGreedClass, formatPp, formatShare, formatUsdCompact, usableContext } from "@/lib/data/cmc-view";
-import { LOCALES, MESSAGES } from "@/lib/i18n/messages";
+import { DEFAULT_LOCALE, LOCALES, MESSAGES } from "@/lib/i18n/messages";
 import { MOCK_SYMBOLS } from "@/lib/mock/scenarios";
 import { ATTRIBUTION, CMC_CONTEXT_SCHEMA, REASONS, TIERS, cmcContextSchema, tierOf, type CmcAsset, type CmcContext } from "@/lib/schema/cmc-context-v1";
 
 const en = MESSAGES.en;
 const zh = MESSAGES["zh-Hant"];
+/** the server render (and a first visit without a saved choice) uses the default locale */
+const dm = MESSAGES[DEFAULT_LOCALE];
 
 // ---- synthetic, schema-valid contexts ----
 const okAsset = (symbol: string, i: number): CmcAsset => {
@@ -254,7 +256,7 @@ test("board with CMC: four labelled live columns, every live cell tinted, scanne
   assert.equal(tinted, CMC_COLUMN_COUNT * (bodyRows + 1));
   assert.match(html, /data-testid="tag-simulated"/);
   assert.match(html, /data-testid="tag-live"/);
-  for (const h of [zh.cmc.table.rank, zh.cmc.table.marketCap, zh.cmc.table.spotVolume]) assert.ok(html.includes(h), h);
+  for (const h of [dm.cmc.table.rank, dm.cmc.table.marketCap, dm.cmc.table.spotVolume]) assert.ok(html.includes(h), h);
 });
 
 test("cells: matched asset shows rank, tier, market cap, spot volume, 24H / 7D", () => {
@@ -366,7 +368,7 @@ test("C5: hero states the product principle; activity wording replaces long/shor
   const html = renderToStaticMarkup(createElement(DemoApp));
   assert.match(text(html), /Discover Market Activity\. Identify Potential Opportunities\./);
   assert.doesNotMatch(text(html), /偏多|偏空|Long bias|Short bias/);
-  assert.match(text(html), /上行活動|下行活動/); // default locale is zh-Hant
+  assert.ok(text(html).includes(dm.bias.LONG) || text(html).includes(dm.bias.SHORT)); // activity words in the default locale
 });
 
 test("C5 final: neutral zh trend words everywhere; hero subtitle", () => {
@@ -374,13 +376,14 @@ test("C5 final: neutral zh trend words everywhere; hero subtitle", () => {
   assert.deepEqual([zh.conflictDir.UP, zh.conflictDir.DOWN], ["上行趨勢", "下行趨勢"]);
   for (const l of LOCALES) assert.doesNotMatch(JSON.stringify(MESSAGES[l]), /多頭|空頭|偏多|偏空/, l);
   assert.equal(en.hero.subtitle, "Monitor unusual cryptocurrency market activity with contextual market data.");
-  assert.match(text(renderToStaticMarkup(createElement(DemoApp))), /結合市場背景資料，監測加密貨幣市場的異常活動。/);
+  assert.equal(zh.hero.subtitle, "結合市場背景資料，監測加密貨幣市場的異常活動。");
+  assert.ok(text(renderToStaticMarkup(createElement(DemoApp))).includes(dm.hero.subtitle));
 });
 
 // ---------- C6-N: table navigation (horizontal scrolling usability) ----------
 test("board navigation: hint, ◀ ▶ buttons tied to the board, left disabled at start (default locale)", () => {
   const html = board(assetsBySymbol(loaded(ctx())));
-  const t = MESSAGES["zh-Hant"].table; // the server render uses the default locale
+  const t = dm.table; // the server render uses the default locale
   assert.ok(html.includes(t.swipe) && html.includes(t.scrollHint), "phone and desktop hints");
   const id = /data-testid="board"[^>]*\bid="([^"]+)"|\bid="([^"]+)"[^>]*data-testid="board"/.exec(html);
   const boardId = id?.[1] ?? id?.[2];
@@ -416,4 +419,16 @@ test("navigation words exist in both locales; the scrollbar style is defined", a
   const css = readFileSync(new URL("../app/globals.css", import.meta.url), "utf-8");
   assert.match(css, /\.board-scroll::-webkit-scrollbar \{/);
   assert.match(css, /scrollbar-width: thin/);
+});
+
+// ---------- C6-L2: English is the first-visit language ----------
+test("first visit without a saved choice renders in English; both locales stay selectable", () => {
+  assert.equal(DEFAULT_LOCALE, "en");
+  const html = renderToStaticMarkup(createElement(DemoApp));
+  assert.match(html, /<div lang="en"/);
+  assert.ok(text(html).includes(en.hero.subtitle));
+  assert.ok(text(html).includes(en.demo.bannerTitle));
+  // the switcher still offers both languages, current one pressed
+  for (const l of LOCALES) assert.match(html, new RegExp(`data-testid="lang-${l}"`), l);
+  assert.match(html, /<button[^>]*lang="en"[^>]*aria-pressed="true"|<button[^>]*aria-pressed="true"[^>]*lang="en"/);
 });

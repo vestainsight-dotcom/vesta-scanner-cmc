@@ -6,7 +6,8 @@ import type { AgeParts } from "@/lib/scanner/format";
 
 export const LOCALES = ["zh-Hant", "en"] as const;
 export type Locale = (typeof LOCALES)[number];
-export const DEFAULT_LOCALE: Locale = "zh-Hant";
+/** First-visit language when there is no valid ?lang= or saved choice. */
+export const DEFAULT_LOCALE: Locale = "en";
 
 const zhAge = (p: AgeParts) =>
   p.unit === "s" ? `${p.n} 秒` : p.unit === "m" ? `${p.n} 分鐘` : p.unit === "h" ? `${p.n} 小時 ${p.m} 分` : `${p.n} 天`;
